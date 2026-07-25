@@ -3,9 +3,8 @@ import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import path from 'node:path'
 import { existsSync, readFileSync } from 'node:fs'
-import { resolve } from 'node:path'
 
-// Tipos (los moví arriba para poder usarlos en la función de carga)
+// Tipos
 type FigmaSiteConfiguration = {
   title?: string
   description?: string
@@ -35,10 +34,13 @@ type FigmaSiteConfiguration = {
 
 // Carga segura: funciona en local (con el archivo) y en Netlify (sin el archivo)
 function loadSiteConfiguration(): FigmaSiteConfiguration {
-  const siteJsonPath = resolve(__dirname, './.figma/make/site.json')
+  // process.cwd() siempre apunta a la raíz del proyecto (funciona en local y en Netlify)
+  const siteJsonPath = path.resolve(process.cwd(), '.figma/make/site.json')
+
   if (!existsSync(siteJsonPath)) {
     return {}
   }
+
   try {
     return JSON.parse(readFileSync(siteJsonPath, 'utf-8')) as FigmaSiteConfiguration
   } catch {
@@ -69,7 +71,8 @@ export default defineConfig(({ mode }) => {
     ],
     resolve: {
       alias: {
-        '@': path.resolve(__dirname, './src'),
+        // También usamos process.cwd() para evitar problemas con __dirname en ESM
+        '@': path.resolve(process.cwd(), 'src'),
       },
     },
     server: {
@@ -97,7 +100,7 @@ function figmaSiteConfiguration(config: FigmaSiteConfiguration): Plugin {
     return html.replace(`<!-- ${slotName} -->`, content)
   }
 
-  const title = config.title ?? "Figma Make App"
+  const title = config.title ?? 'Figma Make App'
   const description = config.description ?? ''
   const favicon = config.icons?.icon ?? ''
   const socialImage = config.openGraph?.image ?? ''
@@ -140,6 +143,7 @@ function figmaSiteConfiguration(config: FigmaSiteConfiguration): Plugin {
         result = replaceHtmlCommentSlot(result, 'figma:body-end', bodyEnd)
 
         const tags: HtmlTagDescriptor[] = []
+
         if (description) {
           tags.push({ tag: 'meta', attrs: { name: 'description', content: description }, injectTo: 'head' })
         }
@@ -230,16 +234,7 @@ function figmaSiteConfiguration(config: FigmaSiteConfiguration): Plugin {
 
 /**
  * Replay the most recent build error to clients that connect after
- * it was first broadcast. Vite buffers an error payload only while
- * no clients are connected and clears the buffer on the first
- * reconnect (see `bufferedMessage` in `createWebSocketServer`), so
- * if the preview iframe reloads after Vite already delivered an
- * error to a live socket, the new socket misses the payload and
- * the overlay stays hidden even though the build is still broken.
- * We intercept `ws.send` to remember the latest error and replay
- * it on every new connection; the cache clears on a successful
- * `update` or `full-reload` so a stale overlay can't survive a
- * fixed build.
+ * it was first broadcast.
  */
 function figmaErrorOverlayReplay(): Plugin {
   return {
@@ -273,15 +268,7 @@ function figmaErrorOverlayReplay(): Plugin {
 
 /**
  * Reload when a module that previously defined a React Refresh boundary stops
- * defining one. This happens when an agent moves a component into a new file
- * and replaces the old module with a re-export:
- *
- *   export { default } from './app/App'
- *
- * Vite otherwise accepts the update using the previous module's HMR boundary,
- * but the re-export-only transform no longer registers a replacement for the
- * mounted component family. React reports a successful refresh while leaving
- * the old tree mounted until the page is reloaded.
+ * defining one.
  */
 function figmaReactRefreshBoundaryFallback(): Plugin {
   const hadRefreshBoundary = new Map<string, boolean>()
@@ -312,15 +299,8 @@ function figmaReactRefreshBoundaryFallback(): Plugin {
 }
 
 /**
- * Serves a blank render-target page at /.figma/make/kit.html that
- * the Figma preview script drives directly. The page exposes a
- * registry of every file matching `storiesGlob` on
- * window.__FIGMA__.stories so the design surface can dynamically
- * import + mount each entry into its own grid view.
- *
- * Dev-only: `apply: 'serve'` gates the plugin to `vite dev`. Prod
- * builds (`vite build`) skip it entirely so the route doesn't leak
- * into shipped bundles.
+ * Serves a blank render-target page at /.figma/make/kit.html
+ * Dev-only: `apply: 'serve'`
  */
 function figmaMakeKitPlugin(options: { storiesGlob: string | string[] }): Plugin {
   const storiesGlob = Array.isArray(options.storiesGlob) ? options.storiesGlob : [options.storiesGlob]

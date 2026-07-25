@@ -2,8 +2,51 @@ import { defineConfig, type HtmlTagDescriptor, type Plugin } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import path from 'node:path'
+import { existsSync, readFileSync } from 'node:fs'
+import { resolve } from 'node:path'
 
-import siteConfiguration from './.figma/make/site.json'
+// Tipos (los moví arriba para poder usarlos en la función de carga)
+type FigmaSiteConfiguration = {
+  title?: string
+  description?: string
+  language?: string
+  robots?: {
+    index?: boolean
+  }
+  icons?: {
+    icon?: string
+  }
+  openGraph?: {
+    image?: string
+  }
+  analytics?: {
+    googleAnalyticsId?: string
+  }
+  customScripts?: {
+    headStart?: string
+    headEnd?: string
+    bodyStart?: string
+    bodyEnd?: string
+  }
+  accessibility?: {
+    addBypassLinks?: boolean
+  }
+}
+
+// Carga segura: funciona en local (con el archivo) y en Netlify (sin el archivo)
+function loadSiteConfiguration(): FigmaSiteConfiguration {
+  const siteJsonPath = resolve(__dirname, './.figma/make/site.json')
+  if (!existsSync(siteJsonPath)) {
+    return {}
+  }
+  try {
+    return JSON.parse(readFileSync(siteJsonPath, 'utf-8')) as FigmaSiteConfiguration
+  } catch {
+    return {}
+  }
+}
+
+const siteConfiguration = loadSiteConfiguration()
 
 // Vite config — https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
@@ -41,33 +84,6 @@ export default defineConfig(({ mode }) => {
     },
   }
 })
-
-type FigmaSiteConfiguration = {
-  title?: string
-  description?: string
-  language?: string
-  robots?: {
-    index?: boolean
-  }
-  icons?: {
-    icon?: string
-  }
-  openGraph?: {
-    image?: string
-  }
-  analytics?: {
-    googleAnalyticsId?: string
-  }
-  customScripts?: {
-    headStart?: string
-    headEnd?: string
-    bodyStart?: string
-    bodyEnd?: string
-  }
-  accessibility?: {
-    addBypassLinks?: boolean
-  }
-}
 
 /** Applies /.figma/make/site.json to the generated document shell. */
 function figmaSiteConfiguration(config: FigmaSiteConfiguration): Plugin {

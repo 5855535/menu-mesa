@@ -1,8 +1,6 @@
 import { useState, useEffect } from 'react'
-import { useCategories } from './hooks/useProducts'
-import { CategoryTabs } from './components/CategoryTabs'
-import { ProductGrid } from './components/ProductGrid'
-import { CategorySkeleton } from './components/Skeletons'
+import { useProducts } from './hooks/useProducts'
+import { RestaurantMenu } from './components/RestaurantMenu'
 import { WhatsAppButton } from './components/WhatsAppButton'
 import { restaurantConfig } from './config/restaurant'
 
@@ -91,8 +89,7 @@ function Footer() {
 }
 
 export default function App() {
-  const [activeCategory, setActiveCategory] = useState<string | null>(null)
-  const { categories, loading: categoriesLoading } = useCategories()
+  const { products, loading } = useProducts()
 
   return (
     <div className="min-h-screen bg-black flex flex-col">
@@ -109,25 +106,10 @@ export default function App() {
         </div>
       </div>
 
-      <main className="flex-1 w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
-        <div className="max-w-7xl mx-auto">
-        <div className="mb-8"></div>
-
-        <div aria-live="polite">
-          {categoriesLoading ? (
-            <CategorySkeleton />
-          ) : (
-            <CategoryTabs
-              categories={categories}
-              activeCategory={activeCategory}
-              onCategoryChange={setActiveCategory}
-            />
-          )}
-        </div>
-
-        <div id="products-panel" role="region" aria-label="Productos">
-          <ProductGrid categoryId={activeCategory} />
-        </div>
+      {/* Main Menu */}
+      <main className="flex-1 w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 bg-black">
+        <div className="max-w-4xl mx-auto">
+          <RestaurantMenu products={products} loading={loading} />
         </div>
       </main>
 

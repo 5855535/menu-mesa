@@ -14,25 +14,22 @@ export function MenuItemCard({ product }: MenuItemCardProps) {
         ${product.isAvailable === false ? 'opacity-60' : ''}
       `}
     >
-      {/* Imagen pequeña (opcional) */}
-      {/* Para versión sin imagen, comentar esta sección */}
-
       {/* Contenido principal */}
       <div className="flex-1 min-w-0">
         {/* Nombre y Precio en la misma línea */}
         <div className="flex items-baseline justify-between gap-4 mb-2">
           <h3 className="text-lg font-black text-amber-400 uppercase tracking-wide">
-            {product.name}
+            {product.nombre}
           </h3>
           <span className="text-lg font-bold text-white whitespace-nowrap">
-            ${product.price.toLocaleString()}
+            ${product.precio.toLocaleString()}
           </span>
         </div>
 
         {/* Descripción */}
-        {product.description && (
+        {product.desc && (
           <p className="text-sm text-gray-400 leading-relaxed line-clamp-2">
-            {product.description}
+            {product.desc}
           </p>
         )}
 
@@ -56,7 +53,7 @@ export function MenuItemCard({ product }: MenuItemCardProps) {
             uppercase tracking-widest whitespace-nowrap
           `}
           disabled={product.isAvailable === false}
-          aria-label={`Agregar ${product.name}`}
+          aria-label={`Agregar ${product.nombre}`}
         >
           Agregar
         </button>

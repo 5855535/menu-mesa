@@ -18,12 +18,11 @@ export const storage = getStorage(app)
 
 export interface Product {
   id: string
-  name: string
-  description: string
-  price: number
-  imageUrl?: string
-  imagePath?: string
-  category?: string
+  nombre: string
+  desc: string
+  precio: number
+  img?: string
+  categoria?: string
   isAvailable?: boolean
   createdAt?: Date
   updatedAt?: Date

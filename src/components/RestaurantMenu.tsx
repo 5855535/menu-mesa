@@ -14,7 +14,7 @@ export function RestaurantMenu({ products, loading }: RestaurantMenuProps) {
     const grouped: Record<string, Product[]> = {}
 
     products.forEach((product) => {
-      const category = product.category || 'Otros'
+      const category = product.categoria || 'Otros'
       if (!grouped[category]) {
         grouped[category] = []
       }

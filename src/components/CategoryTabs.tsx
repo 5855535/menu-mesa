@@ -15,7 +15,7 @@ export function CategoryTabs({ categories, activeCategory, onCategoryChange, loa
 
   return (
     <nav
-      className="flex flex-wrap gap-2.5 pb-6 sm:pb-8"
+      className="flex flex-wrap gap-2.5 pb-6 sm:pb-8 overflow-x-auto scrollbar-hide"
       role="tablist"
       aria-label="Categorías del menú"
     >
@@ -29,13 +29,14 @@ export function CategoryTabs({ categories, activeCategory, onCategoryChange, loa
           onClick={() => onCategoryChange(category.id)}
           disabled={loading}
           className={`
-            relative px-4 sm:px-5 py-2.5 text-sm font-medium rounded-full
+            relative px-5 sm:px-6 py-2.5 text-sm font-bold rounded-full
             transition-all duration-200 ease-out
-            focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2
+            focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 focus:ring-offset-black
             disabled:opacity-50 disabled:cursor-not-allowed
+            whitespace-nowrap flex-shrink-0
             ${activeCategory === category.id
-              ? 'bg-brand-600 text-white shadow-lg shadow-brand-600/30 hover:bg-brand-700'
-              : 'bg-white text-gray-700 border border-gray-200 hover:bg-gray-50 hover:border-brand-300 hover:shadow-sm'
+              ? 'bg-amber-400 text-black shadow-lg shadow-amber-400/30 hover:bg-amber-300 uppercase tracking-wide'
+              : 'bg-slate-900 text-gray-300 border border-slate-700 hover:bg-slate-800 hover:border-brand-600 hover:shadow-sm'
             }
           `}
         >

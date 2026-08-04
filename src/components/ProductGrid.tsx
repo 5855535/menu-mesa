@@ -93,7 +93,7 @@ export function ProductGrid({ categoryId }: ProductGridProps) {
 
   return (
     <div
-      className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-7"
+      className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-7"
       role="list"
       aria-label="Productos del menú"
     >
